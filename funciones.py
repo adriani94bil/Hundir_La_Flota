@@ -5,7 +5,7 @@ import time
 
 #Métodos 
 
-#Método iniciar los dos objetos que son los tableros
+#Método que inicia los dos objetos que son los tableros y lso devuelve en una lista al programa princiapal
 
 def newGame():
     tablero=Tablero.Tablero(0,np.full ((variable.dimension_X,variable.dimension_y),' '),
@@ -15,28 +15,31 @@ def newGame():
     #Una vez inicializados posicionamos los barcos en cada tablaero
     posicionar_barcos_cons(tablero_pc)
     posicionar_barcos(tablero)
-    #Play(tablero, tablero_pc)
+    return [tablero,tablero_pc]
 
-def Play(user,tablero, tablero_pc, contador, contador_pc):
-    mostrar_tablero(user,tablero, tablero_pc)
-    #batalla_ataque(tablero_pc, contador)
-    #batalla_defensa(tablero, contador_pc)
-    if contador==100:
+#Metodo que llama a mostrar y comprueba la condiciones de victoria 
+#
+def jugar(tablero:Tablero, tablero_pc:Tablero):
+    mostrar_tablero(tablero,tablero_pc)
+    disparo_jugador(tablero,tablero_pc)
+    disparo_pc(tablero,tablero_pc)
+    if tablero.aciertos==20:
         print("""
         ****************************
-        ¡ENHORABUENA!¡FLOTA HUNDIDA!
+        ¡ENHORABUENA!¡HAS HUNDIDO LA FLOTA ENEMIGA!
         ****************************
         """)
-    elif contador_pc == 100:
+    elif tablero_pc.aciertos==20:
         print("""
         ****************************
-        ¡UY!¡TU FLOTA SE HA HUNDIDO!
+        ¡HAN HUNDIDO TU FLOTA!
+        GAME OVER
         ****************************
         """)
     else:
-        Play(user,tablero, tablero_pc, contador, contador_pc)
+        jugar(tablero,tablero_pc)
         
-#Posicionar barcos del jugador--> WIP
+#Posicionar barcos del jugador--> WIP  Todavía no reconoce si te pasas de limite de tablero
 
 def posicionar_barcos(tablero:Tablero):
     print('''
@@ -46,10 +49,10 @@ def posicionar_barcos(tablero:Tablero):
     ''')
     for barco,longitud in variable.barcos.items():
         print(f"Coloca tu {barco} con {longitud} esloras")
-        x = int(input("Introduce coordenada x (horizontal): "))
-        y = int(input("y ahora coordenada y (vertical): "))
+        x = int(input("Introduce fila: "))
+        y = int(input("Introduce columna: "))
         if longitud == 1:
-            tablero.tabla_op[y,x] = 'O'
+            tablero.tabla_op[x,y]="O"
             print(tablero.tabla_op)    
         else:
             print("""Define la orientación del barco:
@@ -57,13 +60,13 @@ def posicionar_barcos(tablero:Tablero):
             H) Horizontal
             """)
             orien = input("Elige una opción: ").upper()
-            if orien=="V":
+            if orien=="H":
                 z =y+longitud
-                tablero.tabla_op[y:z,x]="O"
+                tablero.tabla_op[x,y:z]="O"
                 print(tablero.tabla_op)
-            elif orien=="H": 
+            elif orien=="V":
                 z = x + longitud
-                tablero.tabla_op [y,x:z]="O"
+                tablero.tabla_op [x:z,y]="O"
                 print(tablero.tabla_op)
             else:
                 print("Valor no valido")
@@ -74,20 +77,20 @@ def posicionar_barcos(tablero:Tablero):
 def posicionar_barcos_cons(tablero_pc:Tablero):
     
     #En la version 2 hacerlo random con condiciones
-    tablero_pc.tabla_op[0,1] = 'O'
-    tablero_pc.tabla_op[5,5] = 'O'
-    tablero_pc.tabla_op[0,7] = 'O'
-    tablero_pc.tabla_op[0,5] = 'O'
-    tablero_pc.tabla_op[1:3,2] = 'O'
-    tablero_pc.tabla_op[5:7,2] = 'O'
-    tablero_pc.tabla_op[3:5,4] = 'O'
-    tablero_pc.tabla_op[6:9,4] = 'O'
-    tablero_pc.tabla_op[1:4,9] = 'O'
-    tablero_pc.tabla_op[9,4:8] = 'O'
+    tablero_pc.tabla_op[0,0]="O"
+    tablero_pc.tabla_op[5,5]="O"
+    tablero_pc.tabla_op[0,7]="O"
+    tablero_pc.tabla_op[0,5]="O"
+    tablero_pc.tabla_op[1:3,2]="O"
+    tablero_pc.tabla_op[5:7,2]="O"
+    tablero_pc.tabla_op[3:5,4]="O"
+    tablero_pc.tabla_op[6:9,4]="O"
+    tablero_pc.tabla_op[1:4,9]="O"
+    tablero_pc.tabla_op[9,4:8]="O"
     
     return tablero_pc
 
-
+#Metodo auxliar que muestra los atableros
 def mostrar_tablero(tablero:Tablero,tablero_pc:Tablero):
     print(f"""
     * * * * * {tablero.get_nombre_jugador()} * * * * *
@@ -99,3 +102,40 @@ def mostrar_tablero(tablero:Tablero,tablero_pc:Tablero):
           * * * * * PC * * * * *
     """)
     print(tablero_pc.tabla_visible)
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print(tablero_pc.tabla_op)
+    
+def disparo_jugador(tablero:Tablero, tablero_pc:Tablero):
+    print('''
+    ****************
+    ATACA LA FLOTA
+    ****************
+    ''')
+    while True==True:
+        print("Introduce las cordenadas y dispara")
+        x = int(input("Introduce fila : "))
+        y = int(input("Introduce columna: "))
+        if tablero_pc.tabla_op[x,y]=='O':
+            print('¡Tocado!')
+            tablero_pc.tabla_op[x,y]='X'
+            tablero_pc.tabla_visible[x,y]='X'
+            tablero.aciertos+=1
+            print(f"El jugador {tablero.nombre_jugador} lleva {tablero.aciertos} acietos")
+        else:
+            tablero_pc.tabla_op[x,y]='-'
+            tablero_pc.tabla_visible[x,y]='-'
+            print('¡Agua!')
+            return tablero,tablero_pc
+
+def disparo_pc(tablero:Tablero, tablero_pc:Tablero):
+    while True==True:
+        x = np.random.randint(0,10)
+        y = np.random.randint(0,10)
+        if tablero.tabla_visible[x,y]=='O':
+           tablero.tabla_visible[x,y] = 'X'
+           tablero_pc.aciertos+=1
+           print(f"Tocado,  el ordenador lleva {tablero_pc.aciertos} aciertos")
+        else:
+            tablero.tabla_visible[x,y] = '-'
+            print("¡Agua! No te han dado")
+            return tablero,tablero_pc

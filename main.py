@@ -3,6 +3,7 @@ import numpy as np
 import variables as variable
 import time 
 import funciones as fun
+import os
 
 #Zona ciclo while Juego
 
@@ -16,8 +17,8 @@ while True:
     """)
     entrada = input("Elige una opción: ")
     if entrada.upper() =="S":
-        fun.newGame()
-        fun.Play()
+        lista_tableros=fun.newGame()
+        fun.jugar(lista_tableros[0],lista_tableros[1])
     elif entrada.upper() =="X":
             break
     else:
