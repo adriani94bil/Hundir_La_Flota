@@ -9,9 +9,9 @@ import time
 
 def newGame():
     tablero=Tablero.Tablero(0,np.full ((variable.dimension_X,variable.dimension_y),' '),
-                              np.full((variable.dimension_X,variable.dimension_y),'#'),input("Introduce tu nombre jugador:  "),0)
+                              np.full((variable.dimension_X,variable.dimension_y),' '),input("Introduce tu nombre jugador:  "),0)
     tablero_pc=Tablero.Tablero(1,np.full ((variable.dimension_X,variable.dimension_y),' '),
-                                 np.full((variable.dimension_X,variable.dimension_y),'#'),"PC",0)
+                                 np.full((variable.dimension_X,variable.dimension_y),' '),"PC",0)
     #Una vez inicializados posicionamos los barcos en cada tablaero
     posicionar_barcos_cons(tablero_pc)
     posicionar_barcos(tablero)
@@ -20,9 +20,6 @@ def newGame():
 #Metodo que llama a mostrar y comprueba la condiciones de victoria 
 #
 def jugar(tablero:Tablero, tablero_pc:Tablero):
-    mostrar_tablero(tablero,tablero_pc)
-    disparo_jugador(tablero,tablero_pc)
-    disparo_pc(tablero,tablero_pc)
     if tablero.aciertos==20:
         print("""
         ****************************
@@ -37,6 +34,8 @@ def jugar(tablero:Tablero, tablero_pc:Tablero):
         ****************************
         """)
     else:
+        disparo_jugador(tablero,tablero_pc)
+        disparo_pc(tablero,tablero_pc)
         jugar(tablero,tablero_pc)
         
 #Posicionar barcos del jugador--> WIP  Todavía no reconoce si te pasas de limite de tablero
@@ -56,17 +55,27 @@ def posicionar_barcos(tablero:Tablero):
             print(tablero.tabla_op)    
         else:
             print("""Define la orientación del barco:
-            V) Vertical
-            H) Horizontal
+            N) NORTE
+            S) SUR
+            E) ESTE
+            O) OESTE
             """)
             orien = input("Elige una opción: ").upper()
-            if orien=="H":
+            if orien=="E":
                 z =y+longitud
                 tablero.tabla_op[x,y:z]="O"
                 print(tablero.tabla_op)
-            elif orien=="V":
+            elif orien=="S":
                 z = x + longitud
                 tablero.tabla_op [x:z,y]="O"
+                print(tablero.tabla_op)
+            elif orien=="W":
+                z =y-longitud
+                tablero.tabla_op[x,z:y]="O"
+                print(tablero.tabla_op)
+            elif orien=="N":
+                z=x-longitud
+                tablero.tabla_op[z:x,y]="O"
                 print(tablero.tabla_op)
             else:
                 print("Valor no valido")
@@ -90,7 +99,7 @@ def posicionar_barcos_cons(tablero_pc:Tablero):
     
     return tablero_pc
 
-#Metodo auxliar que muestra los atableros
+#Metodo auxliar que muestra los tableros
 def mostrar_tablero(tablero:Tablero,tablero_pc:Tablero):
     print(f"""
     * * * * * {tablero.get_nombre_jugador()} * * * * *
@@ -102,13 +111,11 @@ def mostrar_tablero(tablero:Tablero,tablero_pc:Tablero):
           * * * * * PC * * * * *
     """)
     print(tablero_pc.tabla_visible)
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    print(tablero_pc.tabla_op)
     
 def disparo_jugador(tablero:Tablero, tablero_pc:Tablero):
     print('''
     ****************
-    ATACA LA FLOTA
+    ATACA AL PC
     ****************
     ''')
     while True==True:
@@ -121,21 +128,25 @@ def disparo_jugador(tablero:Tablero, tablero_pc:Tablero):
             tablero_pc.tabla_visible[x,y]='X'
             tablero.aciertos+=1
             print(f"El jugador {tablero.nombre_jugador} lleva {tablero.aciertos} acietos")
+            mostrar_tablero(tablero,tablero_pc)
         else:
             tablero_pc.tabla_op[x,y]='-'
             tablero_pc.tabla_visible[x,y]='-'
             print('¡Agua!')
+            mostrar_tablero(tablero,tablero_pc)
             return tablero,tablero_pc
 
 def disparo_pc(tablero:Tablero, tablero_pc:Tablero):
     while True==True:
         x = np.random.randint(0,10)
         y = np.random.randint(0,10)
-        if tablero.tabla_visible[x,y]=='O':
-           tablero.tabla_visible[x,y] = 'X'
+        if tablero.tabla_op[x,y]=='O':
+           tablero.tabla_op[x,y]='X'
            tablero_pc.aciertos+=1
            print(f"Tocado,  el ordenador lleva {tablero_pc.aciertos} aciertos")
+           mostrar_tablero(tablero,tablero_pc)
         else:
-            tablero.tabla_visible[x,y] = '-'
+            tablero.tabla_op[x,y]='-'
             print("¡Agua! No te han dado")
+            mostrar_tablero(tablero,tablero_pc)
             return tablero,tablero_pc

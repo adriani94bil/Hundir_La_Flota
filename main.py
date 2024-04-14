@@ -18,6 +18,7 @@ while True:
     entrada = input("Elige una opción: ")
     if entrada.upper() =="S":
         lista_tableros=fun.newGame()
+        fun.mostrar_tablero(lista_tableros[0],lista_tableros[1])
         fun.jugar(lista_tableros[0],lista_tableros[1])
     elif entrada.upper() =="X":
             break
