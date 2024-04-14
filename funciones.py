@@ -16,14 +16,7 @@ def newGame():
     posicionar_barcos_cons(tablero_pc)
     posicionar_barcos(tablero)
     return [tablero,tablero_pc]
-
-#Metodo que llama a mostrar y comprueba la condiciones de victoria 
-#
-#def jugar(tablero:Tablero, tablero_pc:Tablero):
- #   disparo_jugador(tablero,tablero_pc)
-  #  disparo_pc(tablero,tablero_pc)
-
-        
+       
 #Posicionar barcos del jugador--> WIP  Todavía no reconoce si te pasas de limite de tablero
 
 def posicionar_barcos(tablero:Tablero):
